@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import './style.dart' as style;
+import 'package:http/http.dart' as http;
+import 'dart:convert';
+
 
 void main() {
   runApp(
@@ -25,6 +28,25 @@ class _MyAppState extends State<MyApp> {
   var tab = 0; // 0 or 1
 
   @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    getData();
+
+  }
+
+  var posts = [];
+  getData() async {
+    var result = await http.get(Uri.parse('https://codingapple1.github.io/app/data.json'));
+    if(result.statusCode == 200){
+      posts = jsonDecode(result.body);
+      print(posts);
+    } else{
+      throw Exception('failed');
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
@@ -37,7 +59,7 @@ class _MyAppState extends State<MyApp> {
         ),
         ],
       ),
-      body: [PostUI(), Text('샵페이지')][tab],
+      body: [PostUI(posts: posts), Text('샵페이지')][tab],
       bottomNavigationBar: BottomNavigationBar(
         showUnselectedLabels: false,
         showSelectedLabels: false,
@@ -62,16 +84,17 @@ class _MyAppState extends State<MyApp> {
 }
 
 class PostUI extends StatelessWidget {
-  PostUI({Key? key}) : super(key: key);
+  PostUI({Key? key, this.posts}) : super(key: key);
 
+  var posts;
   var postImage = [Image.asset('assets/gobchang.jpg'), Image.asset('gobchang.jpg')];
 
   @override
   Widget build(BuildContext context) {
-    return ListView.builder(itemCount: 3, itemBuilder: (BuildContext context, int index){
+    return ListView.builder(itemCount: posts.length, itemBuilder: (c, i){
       return Column(
         children: [
-          Image.network('https://codingapple1.github.io/kona.jpg'),
+          Image.network(posts[i]['image']),
           Container(
             constraints: BoxConstraints(maxWidth: 600),
             padding: EdgeInsets.all(20),
@@ -79,9 +102,9 @@ class PostUI extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text('좋아요100'),
-                Text('글쓴이'),
-                Text('글내용')
+                Text(posts[i]['likes'].toString()),
+                Text(posts[i]['user']),
+                Text(posts[i]['content'])
               ],
             ),
           )
