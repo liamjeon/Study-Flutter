@@ -13,8 +13,16 @@ void main() {
 // Text('글자', style : text1)
 
 //stless
-class MyApp extends StatelessWidget {
+class MyApp extends StatefulWidget {
   const MyApp({Key? key}) : super(key: key);
+
+  @override
+  State<MyApp> createState() => _MyAppState();
+}
+
+class _MyAppState extends State<MyApp> {
+  //state
+  var tab = 0; // 0 or 1
 
   @override
   Widget build(BuildContext context) {
@@ -29,21 +37,61 @@ class MyApp extends StatelessWidget {
         ),
         ],
       ),
-      body: TextButton(onPressed: (){}, child: Text('하이')),
+      body: [PostUI(), Text('샵페이지')][tab],
       bottomNavigationBar: BottomNavigationBar(
         showUnselectedLabels: false,
         showSelectedLabels: false,
+        onTap: (i){
+          setState(() {
+            tab = i;
+          });
+        },
         items: [
           BottomNavigationBarItem(
-              label : '홈',
-              icon: Icon(Icons.home_outlined),
+            label : '홈',
+            icon: Icon(Icons.home_outlined),
           ),
           BottomNavigationBarItem(
-              label : '샵',
-              icon: Icon(Icons.shopping_bag_outlined),
+            label : '샵',
+            icon: Icon(Icons.shopping_bag_outlined),
           )
         ],
       ),
     );
   }
 }
+
+class PostUI extends StatelessWidget {
+  PostUI({Key? key}) : super(key: key);
+
+  var postImage = [Image.asset('assets/gobchang.jpg'), Image.asset('gobchang.jpg')];
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      child: ListView.builder(
+        itemBuilder: (BuildContext context, int index){
+          return Container(
+            child: Column(
+              children: [
+                Container(
+                  child: Icon(Icons.shopping_bag),
+                ),
+                Container(
+                  child: Column(
+                    children: [
+                      Text('좋아요100'),
+                      Text('글쓴이'),
+                      Text('글내용')
+                    ],
+                  ),
+                )
+              ],
+            ),
+          );
+        }
+      ),
+    );
+  }
+}
+
