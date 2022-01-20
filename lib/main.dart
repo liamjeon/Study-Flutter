@@ -1,6 +1,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:contacts_service/contacts_service.dart';
 
 void main() {
   runApp(
@@ -28,8 +29,8 @@ class _MyAppState extends State<MyApp> {
     var status = await Permission.contacts.status;
     if(status.isGranted){
       print('허락됨');
-      openAppSettings(); //앱 설정화면 켜줌
-
+      List<Contact> contacts = await ContactsService.getContacts();
+      // print(contacts);
     }else if(status.isDenied){
       print('거절됨');
       Permission.contacts.request(); //허락해달라고 팝업창 띄움
@@ -37,6 +38,9 @@ class _MyAppState extends State<MyApp> {
       openAppSettings();
     }
   }
+
+//  C:/"Program Files"/Android/"Android Studio"/bin/keytool -genkey -v -keystore C:/Users/ikhyu/Desktop/WebDev/upload-keystore.jks -storetype JKS -keyalg RSA -keysize 2048 -validity 10000 -alias upload
+
 
   @override
   void initState(){
