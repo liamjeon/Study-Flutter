@@ -68,30 +68,26 @@ class PostUI extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      child: ListView.builder(
-        itemBuilder: (BuildContext context, int index){
-          return Container(
+    return ListView.builder(itemCount: 3, itemBuilder: (BuildContext context, int index){
+      return Column(
+        children: [
+          Image.network('https://codingapple1.github.io/kona.jpg'),
+          Container(
+            constraints: BoxConstraints(maxWidth: 600),
+            padding: EdgeInsets.all(20),
+            width: double.infinity,
             child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Container(
-                  child: Icon(Icons.shopping_bag),
-                ),
-                Container(
-                  child: Column(
-                    children: [
-                      Text('좋아요100'),
-                      Text('글쓴이'),
-                      Text('글내용')
-                    ],
-                  ),
-                )
+                Text('좋아요100'),
+                Text('글쓴이'),
+                Text('글내용')
               ],
             ),
-          );
-        }
-      ),
-    );
+          )
+        ],
+      );
+    });
   }
 }
 
