@@ -1,6 +1,5 @@
 
 import 'package:flutter/material.dart';
-import 'package:permission_handler/permission_handler.dart';
 
 void main() {
   runApp(
@@ -23,37 +22,8 @@ class _MyAppState extends State<MyApp> {
   var name = ['전익현', '홍길동', '라연경'];
   var like = [0,0,0];
 
-
-  getPermission() async {
-    var status = await Permission.contacts.status;
-    if(status.isGranted){
-      print('허락됨');
-      openAppSettings(); //앱 설정화면 켜줌
-
-    }else if(status.isDenied){
-      print('거절됨');
-      Permission.contacts.request(); //허락해달라고 팝업창 띄움
-    }else if (status.isPermanentlyDenied) { //유저가 앱설정에서 꺼놓은 경우
-      openAppSettings();
-    }
-  }
-
-  @override
-  void initState(){
-    super.initState();
-    // getPermission();
-  }
-
-  addOne(){
-    setState(() {
-      total++;
-    });
-  }
-  addMember(name){
-    setState(() {
-      print(name);
-      this.name.add(name);
-    });
+  changeA(){
+    total++;
   }
 
   @override
@@ -66,22 +36,19 @@ class _MyAppState extends State<MyApp> {
               onPressed: (){
                 showDialog(context: context, builder: (context){
                   print(context);
-                  return DialogUI(state: a, name: name, addOne: addOne, addMember: addMember);
+                  return DialogUI(state: a, name: name, changeA: changeA);
                 });
               },
             );
           }
       ),
-      appBar: AppBar(title: Text(total.toString()), leading: Icon(Icons.star), actions:[
-        IconButton(onPressed: (){ getPermission(); }, icon: Icon(Icons.contacts)),
-      ],
-      ),
+      appBar: AppBar(title: Text(total.toString()), leading: Icon(Icons.star), actions:[Icon(Icons.star)]),
       body: ListView.builder(
-        itemCount: name.length,
+        itemCount: 3,
         itemBuilder: (context, i){
           print(i);
           return ListTile(
-            leading: Image.asset('assets/1.jpg'),
+            leading: Image.asset('1.jpg'),
             title: Text(name[i]),
           );
         }
@@ -92,22 +59,17 @@ class _MyAppState extends State<MyApp> {
 }
 
 class DialogUI extends StatelessWidget {
-  DialogUI({Key? key, this.state, this.name, this.addOne, this.addMember}) : super(key: key);
+  DialogUI({Key? key, this.state, this.name, this.changeA}) : super(key: key);
   var state;
   var name;
-  var addOne;
-  var addMember;
-  var inputData = TextEditingController();
-  var inputMember = '';
+  var changeA;
 
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
       title: Text('Contact'),
       content: TextField(
-        onChanged: (text){
-          inputMember = text;
-          },
+        onChanged: (value){},
         decoration: InputDecoration(hintText: state.toString()),
       ),
       actions: [
@@ -116,7 +78,8 @@ class DialogUI extends StatelessWidget {
           Navigator.pop(context, true);
         }, child: Text("NO")),
         ElevatedButton(onPressed: (){
-          addMember(inputMember);
+          changeA();
+          print(state);
         }, child: Text("YES")),
       ],
     );
