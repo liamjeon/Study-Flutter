@@ -226,7 +226,11 @@ class _PostUIState extends State<PostUI> {
                     child: Text(widget.posts[i]['user']),
                     onTap: (){
                       Navigator.push(context,
-                        CupertinoPageRoute(builder: (c)=> Profile())
+                        CupertinoPageRoute(builder: (c)=> Profile()),
+                        // PageRouteBuilder(
+                        //   pageBuilder: (c, a1, a2)=> Profile(),
+                        //   transitionsBuilder: (c, a1, a2, child) => FadeTransition(opacity: a1, child: child),
+                        // )
                       );
                     },
                   ),
