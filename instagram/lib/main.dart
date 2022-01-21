@@ -7,13 +7,21 @@ import 'package:flutter/rendering.dart'; //스크롤
 import 'package:image_picker/image_picker.dart'; //이미지
 import 'dart:io';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:provider/provider.dart';
 
 void main() {
   runApp(
-      MaterialApp(
-        theme: style.theme,
-        home: MyApp(),
-  ));
+      MultiProvider(
+        providers: [
+          ChangeNotifierProvider(create: (c) => Store1()),
+          ChangeNotifierProvider(create: (c) => Store2()),
+        ],
+        child: MaterialApp(
+          theme: style.theme,
+          home: MyApp(),
+         ),
+      )
+  );
 }
 
 //stless
@@ -249,16 +257,86 @@ class _PostUIState extends State<PostUI> {
   }
 }
 
+class Store2 extends ChangeNotifier {
+  var name = 'john';
+}
 
-class Profile extends StatelessWidget {
+class Store1 extends ChangeNotifier {
+  var name = 'liam jeon';
+  var follower = 0;
+  var isfollower = false;
+  var profileImage = [];
+  
+  getData() async {
+    var result = await http.get(Uri.parse('https://codingapple1.github.io/app/profile.json'));
+    profileImage = jsonDecode(result.body);
+    print(profileImage);
+    notifyListeners();
+  }
+
+  follow(){
+    if(!isfollower){
+      follower++;
+      isfollower = true;
+    }else{
+      follower--;
+      isfollower = false;
+    }
+
+    notifyListeners();
+  }
+
+  changeName(){
+    name = 'liam jeon';
+    notifyListeners(); // 재 렌더링 해라.
+  }
+}
+
+class Profile extends StatefulWidget {
   const Profile({Key? key}) : super(key: key);
+
+  @override
+  State<Profile> createState() => _ProfileState();
+}
+
+class _ProfileState extends State<Profile> {
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    context.read<Store1>().getData();
+    // print(context.watch<Store1>().follower);
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(),
-      body: Text('프로필페이지'),
+        appBar: AppBar(title: Text(context.watch<Store1>().name)),
+      body: Container(
+        margin: EdgeInsets.all(20),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Icon(Icons.contacts),
+            Text('팔로워 ${context.watch<Store1>().follower}명'),
+            ElevatedButton(onPressed: (){
+              context.read<Store1>().follow();
+            }, child: Text('팔로우')),
+          ],
+        ),
+      ),
     );
   }
 }
+
+class  extends StatelessWidget {
+  const ({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Container();
+  }
+}
+
 
