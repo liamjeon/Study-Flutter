@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart'; //ios  스타일
 import 'package:flutter/material.dart';
 import './style.dart' as style;
 import 'package:http/http.dart' as http; //REST API
@@ -5,6 +6,7 @@ import 'dart:convert'; //Json
 import 'package:flutter/rendering.dart'; //스크롤
 import 'package:image_picker/image_picker.dart'; //이미지
 import 'dart:io';
+import 'package:shared_preferences/shared_preferences.dart';
 
 void main() {
   runApp(
@@ -13,9 +15,6 @@ void main() {
         home: MyApp(),
   ));
 }
-
-// var text1 = TextStyle(color : Colors.red);
-// Text('글자', style : text1)
 
 //stless
 class MyApp extends StatefulWidget {
@@ -32,12 +31,20 @@ class _MyAppState extends State<MyApp> {
   var userContent;
   var posts = [];
 
+  saveData() async {
+    var storage = await SharedPreferences.getInstance();
+    storage.setBool('a', true);
+    storage.setString('name', 'john');
+    var result = storage.get('name');
+    print(result);
+  }
+
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
     getData();
-
+    saveData();
   }
 
   addMyData(){
@@ -164,13 +171,10 @@ class Upload extends StatelessWidget {
 
 class PostUI extends StatefulWidget {
   PostUI({Key? key, this.posts}) : super(key: key);
-
   final posts;
-
   @override
   State<PostUI> createState() => _PostUIState();
 }
-
 class _PostUIState extends State<PostUI> {
 
   var scroll = ScrollController();
@@ -218,8 +222,15 @@ class _PostUIState extends State<PostUI> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
+                  GestureDetector(
+                    child: Text(widget.posts[i]['user']),
+                    onTap: (){
+                      Navigator.push(context,
+                        CupertinoPageRoute(builder: (c)=> Profile())
+                      );
+                    },
+                  ),
                   Text('좋아요 ${widget.posts[i]['likes'].toString()}'),
-                  Text(widget.posts[i]['user']),
                   Text(widget.posts[i]['date']),
                   Text(widget.posts[i]['content'])
                 ],
@@ -231,6 +242,19 @@ class _PostUIState extends State<PostUI> {
     }else{
       return Text('Loading...');
     }
+  }
+}
+
+
+class Profile extends StatelessWidget {
+  const Profile({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(),
+      body: Text('프로필페이지'),
+    );
   }
 }
 
