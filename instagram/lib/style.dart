@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
 
-var _var1;
-
 var theme = ThemeData(
   // textButtonTheme: TextButtonThemeData(
   //   style: TextButton.styleFrom(
