@@ -3,6 +3,8 @@ import './style.dart' as style;
 import 'package:http/http.dart' as http; //REST API
 import 'dart:convert'; //Json
 import 'package:flutter/rendering.dart'; //스크롤
+import 'package:image_picker/image_picker.dart'; //이미지
+import 'dart:io';
 
 void main() {
   runApp(
@@ -26,6 +28,9 @@ class MyApp extends StatefulWidget {
 class _MyAppState extends State<MyApp> {
   //state
   var tab = 0; // 0 or 1
+  var userImage;
+  var userContent;
+  var posts = [];
 
   @override
   void initState() {
@@ -35,7 +40,27 @@ class _MyAppState extends State<MyApp> {
 
   }
 
-  var posts = [];
+  addMyData(){
+    var myData = {
+      'id': posts.length,
+      'image': userImage,
+      'likes': 5,
+      'date': 'July 25',
+      'content': userContent,
+      'liked': false,
+      'user': 'John Kim'
+    };
+    setState(() {
+      posts.insert(0, myData);
+    });
+  }
+
+  setUserContent(content){
+    setState(() {
+      userContent = content;
+    });
+  }
+
   getData() async {
     var result = await http.get(Uri.parse('https://codingapple1.github.io/app/data.json'));
     if(result.statusCode == 200){
@@ -48,6 +73,12 @@ class _MyAppState extends State<MyApp> {
     }
   }
 
+  addData(result){
+    setState(() {
+      posts.add(result);
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -55,9 +86,19 @@ class _MyAppState extends State<MyApp> {
         title: Text('Instagram'),
         actions: [
           IconButton(
-            onPressed: (){
+            onPressed: () async {
+              var picker = ImagePicker();
+              var image = await picker.pickImage(source: ImageSource.gallery); //카메라에서 이미지 받아옴
+              if(image != null) {
+                setState(() {
+                  userImage = File(image.path); //이미지 경로
+                });
+              }
               Navigator.push(context,
-                MaterialPageRoute(builder: (context){return Upload();})
+                MaterialPageRoute(builder: (context){
+                  return Upload(
+                    userImage: userImage, setUserContent: setUserContent, addMyData: addMyData);
+                })
               );
             },
             icon: Icon(Icons.add_box_outlined),
@@ -90,19 +131,30 @@ class _MyAppState extends State<MyApp> {
 }
 
 class Upload extends StatelessWidget {
-  const Upload({Key? key}) : super(key: key);
+  const Upload({Key? key, this.userImage, this.setUserContent, this.addMyData}) : super(key: key);
+  final userImage;
+  final setUserContent;
+  final addMyData;
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(),
+      appBar: AppBar(
+        actions: [
+          IconButton(onPressed: (){
+            addMyData();
+            Navigator.pop(context);
+          }, icon: Icon(Icons.check)),
+        ],
+      ),
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          Image.file(userImage), //파일경로 이미지 띄우기
           Text('이미지 업로드 화면'),
-          IconButton(onPressed: (){
-            Navigator.pop(context);
-          }, icon: Icon(Icons.close)),
+          TextField(onChanged: (text){
+            setUserContent(text);
+          },),
         ],
       )
     );
@@ -156,7 +208,9 @@ class _PostUIState extends State<PostUI> {
           itemBuilder: (c, i) {
         return Column(
           children: [
-            Image.network(widget.posts[i]['image']),
+            widget.posts[i]['image'].runtimeType == String
+                ? Image.network(widget.posts[i]['image'])
+                : Image.file(widget.posts[i]['image']),
             Container(
               constraints: BoxConstraints(maxWidth: 600),
               padding: EdgeInsets.all(20),
@@ -166,6 +220,7 @@ class _PostUIState extends State<PostUI> {
                 children: [
                   Text('좋아요 ${widget.posts[i]['likes'].toString()}'),
                   Text(widget.posts[i]['user']),
+                  Text(widget.posts[i]['date']),
                   Text(widget.posts[i]['content'])
                 ],
               ),
