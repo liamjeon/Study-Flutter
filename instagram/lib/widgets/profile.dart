@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart'; //스크롤
 import 'package:provider/provider.dart';
 //
-import './store.dart';
+import '../data/store.dart';
 
 class Profile extends StatefulWidget {
   const Profile({Key? key}) : super(key: key);

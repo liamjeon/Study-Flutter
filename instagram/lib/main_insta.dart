@@ -25,7 +25,7 @@ void main() {
         child: MaterialApp(
           theme: style.theme,
           home: MyApp(),
-        ),
+         ),
       )
   );
 }
@@ -126,15 +126,15 @@ class _MyAppState extends State<MyApp> {
                 });
               }
               Navigator.push(context,
-                  MaterialPageRoute(builder: (context){
-                    return Upload(
-                        userImage: userImage, setUserContent: setUserContent, addMyData: addMyData);
-                  })
+                MaterialPageRoute(builder: (context){
+                  return Upload(
+                    userImage: userImage, setUserContent: setUserContent, addMyData: addMyData);
+                })
               );
             },
             icon: Icon(Icons.add_box_outlined),
             iconSize: 40,
-          ),
+        ),
         ],
       ),
       body: [PostUI(posts: posts), Text('샵페이지')][tab],
